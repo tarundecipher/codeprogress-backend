@@ -33,7 +33,10 @@ const waitTillHTMLRendered = async (page, timeout = 30000) => {
 async function rqt(url,callback){
     try{
        
-       const browser = await puppet.launch({ args: ['--no-sandbox'] });
+       const browser = await puppet.launch({
+        headless: true,
+        args: ['--no-sandbox','--disable-setuid-sandbox']
+      });
        const page = await browser.newPage();
        
        await page.goto(url)
