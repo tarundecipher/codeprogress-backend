@@ -11,7 +11,9 @@ const url_leetcode = 'https://leetcode.com/';
 const url_codeforces = 'https://codeforces.com/profile/';
 const url_codechef = 'https://www.codechef.com/users/';
 
-
+app.use(function (req, res, next) {
+    res.set('Cache-control', 'public, max-age=300')
+  })
 
 app.get('/', (req, res) => {
     let cdchf = req.query.cdchf;
