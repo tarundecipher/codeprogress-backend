@@ -13,7 +13,7 @@ const url_codeforces = 'https://codeforces.com/profile/';
 const url_codechef = 'https://www.codechef.com/users/';
 
 app.use(function (req, res, next) {
-    let key = '__express__'+req.originalUrl||req.url;
+    let key = '__express__'+req.url;
     let cachedBody = mcache.get(key)
     if(cachedBody){
         res.send(cachedBody)
