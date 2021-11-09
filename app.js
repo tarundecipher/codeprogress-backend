@@ -2,6 +2,7 @@ const express = require('express');
 const {fork} = require('child_process');
 const forked = fork('fetch_details.js');
 const fetch_details = require('./fetch_details')
+const mcache = require('memory-cache');
 
 
 const app = express();
@@ -12,7 +13,20 @@ const url_codeforces = 'https://codeforces.com/profile/';
 const url_codechef = 'https://www.codechef.com/users/';
 
 app.use(function (req, res, next) {
-    res.set('Cache-control', 'public, max-age=300')
+    let key = '__express__'+req.originalUrl||req.url;
+    let cachedBody = mcache.get(key)
+    if(cachedBody){
+        res.send(cachedBody)
+        return
+    }
+    else{
+        res.sendResponse = res.send
+        res.send = (body) =>{
+            mcache.put(key,body,30000);
+            res.sendResponse(body)
+        }
+    }
+    next()
   })
 
 app.get('/', (req, res) => {
