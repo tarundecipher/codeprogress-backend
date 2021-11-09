@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
     else{
         res.sendResponse = res.send
         res.send = (body) =>{
-            mcache.put(key,body,30000);
+            mcache.put(key,body,300000);
             res.sendResponse(body)
         }
     }
