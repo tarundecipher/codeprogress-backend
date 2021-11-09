@@ -34,7 +34,7 @@ async function rqt(url,callback){
     try{
        
        const browser = await puppet.launch({
-        headless: false,
+        headless: true,
         args: ['--no-sandbox','--disable-setuid-sandbox']
       });
        const page = await browser.newPage();
