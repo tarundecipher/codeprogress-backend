@@ -53,7 +53,7 @@ async function rqt(url,callback){
     }
 }
 
-async function fetch_details(url_codechef,url_leetcode,url_codeforces){
+module.exports = async function fetch_details(url_codechef,url_leetcode,url_codeforces){
 
     try{
     var result = {};
@@ -88,12 +88,12 @@ catch(err){
     
 }
 
-process.on('message',(msg)=>{
-  fetch_details(msg.url_codechef,msg.url_leetcode,msg.url_codeforces).then((details)=>{
-    process.send(details);
-  }
-  )
-})
+// process.on('message',(msg)=>{
+//   fetch_details(msg.url_codechef,msg.url_leetcode,msg.url_codeforces).then((details)=>{
+//     process.send(details);
+//   }
+//   )
+// })
 
 
 
