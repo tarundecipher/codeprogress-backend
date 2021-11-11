@@ -1,6 +1,6 @@
 const express = require('express');
 const {fork} = require('child_process');
-const forked = fork('fetch_details.js');
+
 const fetch_details = require('./fetch_details')
 const mcache = require('memory-cache');
 
@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
     else{
         res.sendResponse = res.send
         res.send = (body) =>{
-            mcache.put(key,body,300000);
+            mcache.put(key,body,100000);
             res.sendResponse(body)
         }
     }
@@ -33,16 +33,18 @@ app.get('/', (req, res) => {
     let cdchf = req.query.cdchf;
     let cdf = req.query.cdf;
     let leet = req.query.leet
+    const forked = fork('fetch_details.js');
     fetch_details(url_codechef+cdchf,url_leetcode+leet,url_codeforces+cdf).then((details)=>{
         res.send(details)
     })
-    // forked.send({url_codechef:url_codechef+cdchf,url_leetcode:url_leetcode+leet,url_codeforces:url_codeforces+cdf});
     // forked.on('message',(msg)=>{
     //     console.log(msg);
     //     res.send(msg);
+    //     // process.exit();
     // })
 
-
+    // forked.send({url_codechef:url_codechef+cdchf,url_leetcode:url_leetcode+leet,url_codeforces:url_codeforces+cdf});
+    
 })
   
 app.listen(port, () => {
