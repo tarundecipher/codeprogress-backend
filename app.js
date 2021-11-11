@@ -30,14 +30,13 @@ app.use(function (req, res, next) {
     }
     next()
   })
-  
+
 app.get('/', (req, res) => {
     let cdchf = req.query.cdchf;
     let cdf = req.query.cdf;
     let leet = req.query.leet
     fetch_details(url_codechef+cdchf,url_leetcode+leet,url_codeforces+cdf).then((details)=>{
         res.send(details);
-        console.log(`${process.pid}`)
 
     })
 
@@ -46,13 +45,13 @@ app.get('/', (req, res) => {
 
 
 
-if(cluster.isMaster){
-    for(let i = 0;i<cpu;i++){
-        cluster.fork();
-    }
-}
-else{
+// if(cluster.isMaster){
+//     for(let i = 0;i<cpu;i++){
+//         cluster.fork();
+//     }
+// }
+// else{
     app.listen(port, () => {
         console.log(`app listening at ${process.pid} http://localhost:${port}`)
     })
-}
+// }
