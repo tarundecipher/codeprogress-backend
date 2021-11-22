@@ -4,39 +4,12 @@ const ch = require('cheerio');
 
 
 
-const waitTillHTMLRendered = async (page, timeout = 30000) => {
-    const checkDurationMsecs = 1000;
-    const maxChecks = timeout / checkDurationMsecs;
-    let lastHTMLSize = 0;
-    let checkCounts = 1;
-    let countStableSizeIterations = 0;
-    const minStableSizeIterations = 3;
+async function rqt(url,callback,selector,browser){
   
-    while(checkCounts++ <= maxChecks){
-      let html = await page.content();
-      let currentHTMLSize = html.length; 
-  
-      if(lastHTMLSize != 0 && currentHTMLSize == lastHTMLSize) 
-        countStableSizeIterations++;
-      else 
-        countStableSizeIterations = 0; //reset the counter
-  
-      if(countStableSizeIterations >= minStableSizeIterations) {
-        break;
-      }
-  
-      lastHTMLSize = currentHTMLSize;
-      await page.waitFor(checkDurationMsecs);
-    }  
-  };
 
-async function rqt(url,callback,selector){
     try{
        
-       const browser = await puppet.launch({
-        headless: true,
-        args: ['--no-sandbox','--disable-setuid-sandbox']
-      });
+      
        const page = await browser.newPage();
        await page.setRequestInterception(true)
        page.on('request', (request) => {
@@ -48,16 +21,15 @@ async function rqt(url,callback,selector){
       let selectorExists = await page.waitForSelector(selector)
        const html = await page.content();
        const $ = ch.load(html);
-       await browser.close();
+   
        return callback($)
   
     }
     catch(err){
         console.log(err);
-        await browser.close();
         return null;
     }
-  
+
 }
 
 
@@ -71,13 +43,21 @@ function check(value){
 
 
 async function fetch_details(url_codechef,url_leetcode,url_codeforces){
+  const browser = await puppet.launch({
+    headless: true,
+    args: ['--no-sandbox','--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-first-run',
+    '--no-zygote']
+  });
 
     try{
     var result = {};
     result['codechef'] = [];
     [value3,value2,value] = await Promise.all([
     rqt(url_leetcode,
-    callback_leetcode,'.total-solved-count__2El1'),
+    callback_leetcode,'.total-solved-count__2El1',browser),
     
     
    
@@ -87,21 +67,35 @@ async function fetch_details(url_codechef,url_leetcode,url_codeforces){
           num = num.slice(0,num.length-1);
           result['codechef'].push(num);
         });
-    },'.content'),
+    },'.content',browser),
     
     rqt(url_codeforces,
-    callback_codeforces,'._UserActivityFrame_counterValue')
+    callback_codeforces,'._UserActivityFrame_counterValue',browser)
   ]
     )
+    if(value3!=null){
     result['leetcode'] = value3.toString()
+    }
+    else{
+      result['leetcode'] = '0';
+    }
+    if(value!=null){
     value = value.toString();
     result['codeforces'] = value.split(" ")[0];
+    }
+    else{
+      result['codeforces'] = '0';
+    }
   
     return result;
 }
 catch(err){
     console.log(err);
 }
+finally{
+  await browser.close();
+}
+
     
 }
 
@@ -118,12 +112,6 @@ const callback_leetcode = ($)=>{
 
 module.exports = fetch_details
 
-// process.on('message',(msg)=>{
-//   fetch_details(msg.url_codechef,msg.url_leetcode,msg.url_codeforces).then((details)=>{
-//     process.send(details);
-//   }
-//   )
-// })
 
 
 
