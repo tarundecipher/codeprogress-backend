@@ -1,10 +1,23 @@
 version: "3.9"
 services:
   web:
-    image: "tarundecipher/codeprogress"
-    # build: .
+    # image: "tarundecipher/codeprogress"
+    build: .
     ports:
-      - "3000:3000"
+      - "5001:3000"
+  web1:
+    # image: "tarundecipher/codeprogress"
+    build: .
+    ports:
+      - "5002:3000"
   redis:
     image: "redis"
     hostname: "redis"
+  nginx:
+    build: ./nginx
+    ports:
+      - "3000:80"
+    depends_on:
+      - web
+      - redis
+      - web1
