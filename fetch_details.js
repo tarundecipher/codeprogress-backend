@@ -1,4 +1,5 @@
 const ch = require("cheerio");
+const codeforces_user = require("./codeforces-api");
 
 async function rqt(url, callback, selector, browser) {
   const page = await browser.newPage();
@@ -22,16 +23,17 @@ async function rqt(url, callback, selector, browser) {
   }
 }
 
-async function fetch_details(
-  url_codechef,
-  url_leetcode,
-  url_codeforces,
-  browser
-) {
+async function fetch_details(cdchf, leet, cdf, browser) {
+  let url_leetcode = "https://leetcode.com/";
+  let url_codeforces = "https://codeforces.com/profile/";
+  let url_codechef = "https://www.codechef.com/users/";
+  url_leetcode += leet;
+  url_codeforces += cdf;
+  url_codechef += cdchf;
   try {
     var result = {};
     result["codechef"] = [];
-    [value3, value2, value] = await Promise.all([
+    [value3, value2] = await Promise.all([
       rqt(
         url_leetcode,
         callback_leetcode,
@@ -53,26 +55,16 @@ async function fetch_details(
         ".content",
         browser
       ),
-
-      rqt(
-        url_codeforces,
-        callback_codeforces,
-        "._UserActivityFrame_counterValue",
-        browser
-      ),
     ]);
     if (value3 != null) {
       result["leetcode"] = value3.toString();
     } else {
       result["leetcode"] = "0";
     }
-    if (value != null) {
-      value = value.toString();
-      result["codeforces"] = value.split(" ")[0];
-    } else {
-      result["codeforces"] = "0";
-    }
+    const user = new codeforces_user(cdf);
+    let res = await user.get_number_of_problems();
 
+    result["codeforces"] = res;
     return result;
   } catch (err) {
     console.log(err);
@@ -82,8 +74,6 @@ async function fetch_details(
 const callback_codeforces = ($) => {
   return $("._UserActivityFrame_counterValue").text();
 };
-
-// const callback_codechef =
 
 const callback_leetcode = ($) => {
   return $(".total-solved-count__2El1").text();
