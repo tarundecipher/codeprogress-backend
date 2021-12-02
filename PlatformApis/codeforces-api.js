@@ -8,10 +8,12 @@ module.exports = class codeforces_user {
   date = new Date();
   time = Math.floor(this.date.getTime() / 1000);
   url_problems = "https://codeforces.com/api/user.status?handle=";
+  url_info = " https://codeforces.com/api/user.info?handles=";
 
   constructor(username) {
     this.username = username;
     this.url_problems += username;
+    this.url_info += username;
   }
 
   get_problems() {
@@ -80,6 +82,22 @@ module.exports = class codeforces_user {
 
         result = new Set(result);
         resolve(result.size);
+      });
+    });
+  }
+
+  get_user_ratings() {
+    let hash = `${this.random}/user.info?apiKey=${this.apikey}&handles=${this.username}&time=${this.time}#${this.secret}`;
+    hash = crypto.createHash("sha512").update(hash).digest("hex");
+    let url_end = `&apiKey=${this.apikey}&time=${this.time}&apiSig=${this.random}${hash}`;
+    return new Promise((resolve, reject) => {
+      request(this.url_info + url_end, (err, res, body) => {
+        body = JSON.parse(body);
+        if (body.status == "FAILED") {
+          reject(body);
+          return;
+        }
+        resolve(body.result[0].rating);
       });
     });
   }
