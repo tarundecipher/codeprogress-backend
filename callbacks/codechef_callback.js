@@ -9,6 +9,9 @@ launch_browser().then((brw) => {
 module.exports = (req, res) => {
   fetch_details(req.query.cdchf).then((result) => {
     res.send({ problems: result });
+  }).catch((err)=>{
+    res.send({problems:0})
+    console.log(err);
   });
 };
 

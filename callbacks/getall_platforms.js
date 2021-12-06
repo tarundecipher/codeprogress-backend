@@ -11,5 +11,8 @@ module.exports = (req, res) => {
     (details) => {
       res.send(details);
     }
-  );
+  ).catch(()=>{
+    res.send({"codeforces":0,
+  "leetcode":0,"codechef":[0,0]})
+  });
 };

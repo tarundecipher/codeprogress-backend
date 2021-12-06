@@ -7,6 +7,7 @@ module.exports = (req, res) => {
       res.send({ problems: result });
     })
     .catch((err) => {
+      res.send({problems:0})
       console.log(err);
     });
 };
