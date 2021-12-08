@@ -6,7 +6,8 @@ const getall_platforms_callback = require("./callbacks/getall_platforms");
 const codeforces_questions_callback = require("./callbacks/codeforces_questions_callback");
 const leetcode_questions_callback = require("./callbacks/leetcode_questions_callback");
 const leetcode_callback = require("./callbacks/leetcode_callback");
-const codeforces_rating_callback = require("./callbacks/codeforces_rating_callback");
+const codeforces_rating_callback = require("./callbacks/codeforces_rating_callback"); 
+const update_callback = require('./callbacks/update_callbacks')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.get("/api/codeforces/statistics", codeforces_callback);
 app.get("/api/leetcode/statistics", leetcode_callback);
 
 app.get("/api/codeforces/rating", codeforces_rating_callback);
+app.get("/api/update",update_callback);
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`app listening at  http://localhost:${port}`);
