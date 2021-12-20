@@ -28,6 +28,7 @@ module.exports = class codeforces_user {
           reject(body);
           return;
         }
+    
         body.result = body.result.filter((problem) => {
           if (problem.verdict == "OK") {
             return problem;
@@ -101,4 +102,26 @@ module.exports = class codeforces_user {
       });
     });
   }
+
+  get_submissions() {
+    let hash = `${this.random}/user.status?apiKey=${this.apikey}&handle=${this.username}&time=${this.time}#${this.secret}`;
+    hash = crypto.createHash("sha512").update(hash).digest("hex");
+    let url_end = `&apiKey=${this.apikey}&time=${this.time}&apiSig=${this.random}${hash}`;
+
+    return new Promise((resolve, reject) => {
+      request(this.url_problems + url_end, (err, res, body) => {
+        body = JSON.parse(body);
+        if (body.status == "FAILED") {
+          reject(body);
+          return;
+        }
+    
+        const result = body.result;
+        resolve(body);
+      });
+    });
+  }
 };
+
+
+

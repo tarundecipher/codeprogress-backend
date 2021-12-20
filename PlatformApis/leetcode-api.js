@@ -44,4 +44,28 @@ module.exports = class leetcode_user {
     let data = await request(this.url, query);
     return data.matchedUser.submitStats;
   }
+
+  async get_submissions(){
+    let query = gql`
+    {
+    
+        recentSubmissionList(username: "${this.username}", limit: 100) {
+          title
+          titleSlug
+          timestamp
+          statusDisplay
+          lang
+          __typename
+        }
+        languageList {
+          id
+          name
+          verboseName
+          __typename
+        }
+      }
+  `;
+    let data = await request(this.url, query);
+    return data.recentSubmissionList;
+  }
 };
